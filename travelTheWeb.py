@@ -3,6 +3,8 @@ from flask import request
 from pymongo import MongoClient
 from datetime import datetime
 from hashlib import sha256
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 import random
 import smtplib
 import requests
@@ -29,12 +31,20 @@ def putNewAccount(name, email, password):
 			"Approved": "0"
 		}
 	)
+	fromaddr = "noreply.traveltheweb@gmail.com"
+	toaddr = email
+	confirmLink = "http://localhost:5000/confirm-account/"+key+""
+	msg = MIMEText("<a href='"+confirmLink+"'>Click here</a>",'html')
+	msg["From"] = fromaddr
+	msg["to"] = toaddr
+	msg["Subject"] = "Link to confirm your new Travel the Web Account"
+
+
 	server = smtplib.SMTP("smtp.gmail.com", 587)
 	server.starttls()
 	server.login("noreply.traveltheweb@gmail.com", "Mytraveltheweb321$")
-
-	message = str("Click this link to confirm you account localhost:5000/confirm-account/"+key)
-	server.sendmail("noreply.traveltheweb@gmail.com", email, message)
+	text = msg.as_string()
+	server.sendmail(fromaddr, email, text)
 	server.quit()
 
 @app.route("/")
@@ -53,4 +63,5 @@ def makeAccount():
 
 @app.route("/confirm-account/<key>")
 def confirmAccount(key):
-	result = db.Clients.update_one({"key": key}, {"$inc": {"Approved": "1"}})
+	result = db.Clients.update_one({"key": key}, {"$set": {"Approved": "1"}})
+	return "Your account has been approved"
