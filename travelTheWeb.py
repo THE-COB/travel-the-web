@@ -28,7 +28,7 @@ def putNewAccount(name, email, password):
 			"key": key,
 			"DateUpdated": datetime.now().strftime("%Y-%m-%d %H:%M"),
 			"Coins": [],
-			"Approved": "0"
+			"Approved": 0
 		}
 	)
 	fromaddr = "noreply.traveltheweb@gmail.com"
@@ -63,5 +63,5 @@ def makeAccount():
 
 @app.route("/confirm-account/<key>")
 def confirmAccount(key):
-	result = db.Clients.update_one({"key": key}, {"$set": {"Approved": "1"}})
+	result = db.Clients.update_one({"key": key}, {"$set": {"Approved": 1}})
 	return "Your account has been approved"
