@@ -8,6 +8,7 @@ from email.mime.text import MIMEText
 import random
 import smtplib
 import requests
+import coin
 app = Flask(__name__)
 
 client = MongoClient()
