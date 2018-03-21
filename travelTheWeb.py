@@ -5,17 +5,18 @@ from datetime import datetime
 from hashlib import sha256
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+from coin import Coin
 import random
 import smtplib
 import requests
-import coin
 app = Flask(__name__)
 
 client = MongoClient()
 db = client.TravelWeb
 
 def putNewAccount(name, email, password):
-	print(db.Clients.find({"Email": email}))
+	if(name.find('/') != -1 or name.find('\\') != -1):
+		raise Exception("Illegal character used")
 	if(db.Clients.find({"Email": email}).count() != 0):
 		raise Exception("Email already exists")
 	if(db.Clients.find({"Name": name}).count() != 0):
@@ -48,8 +49,8 @@ def putNewAccount(name, email, password):
 	server.sendmail(fromaddr, email, text)
 	server.quit()
 
-@app.route("/")
-def index():
+@app.route("/create-account")
+def createAccount():
 	f = open("make-account.html")
 	return f.read()
 
@@ -66,3 +67,10 @@ def makeAccount():
 def confirmAccount(key):
 	result = db.Clients.update_one({"key": key}, {"$set": {"Approved": 1}})
 	return "Your account has been approved"
+
+@app.route("/<username>/create-coin")
+def createCoin(username):
+	user = db.Clients.find_one({"Name": username})
+	newCoin = Coin(user["key"])
+	newCoin.updateDb()
+	return "Coin was successfully created"
