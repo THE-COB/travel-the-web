@@ -4,7 +4,7 @@
 <h1>Hello, {{ params.user["Name"] }}!</h1>
 
 <form action='{{ "/create-coin/"+params.user["Name"]+"/"+params.entropy["cc0"]+params.user["key"]+params.entropy["cc1"] }}' method="post">
-	CoinName: <input type="text" name="coinName" />
+	Coin Name: <input type="text" name="coinName" />
 	<input type='submit' value='Create Coin' />
 </form>
 

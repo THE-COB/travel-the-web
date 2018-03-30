@@ -52,8 +52,7 @@ def putNewAccount(params):
 	fromaddr = "noreply.traveltheweb@gmail.com"
 	toaddr = email
 	confirmLink = "http://192.168.200.154:5000/confirm-account/"+entropy["conf0"]+key+entropy["conf1"]
-	emailHtml = render_template("accountConfirmed.html", pars={"name": name, "confLink": confirmLink})
-	msg = MIMEText(emailHtml,'html')
+	msg = MIMEText("<h1>Thank you for signing up for <i>Travel the Web</i></h1><p><a href='"+confirmLink+"'>Click here</a> to confirm your account</p>",'html')
 	msg["From"] = fromaddr
 	msg["to"] = toaddr
 	msg["Subject"] = "Link to confirm your new Travel the Web Account"
@@ -111,7 +110,8 @@ def makeAccount():
 @app.route("/confirm-account/"+entropy["conf0"]+"<key>"+entropy["conf1"])
 def confirmAccount(key):
 	result = db.Clients.update_one({"key": key}, {"$set": {"Approved": 1}})
-	return "Your account has been approved"
+	accConfHtml = render_template("accountConfirmed.html", pars={"name": db.Clients.find_one({"key": key})["Name"], "confLink": "http://192.168.200.154:5000"})
+	return accConfHtml
 
 @app.route("/create-coin/<username>/"+entropy["cc0"]+"<key>"+entropy["cc1"], methods=["POST"])
 def createCoin(username, key):

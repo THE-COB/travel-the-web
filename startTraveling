@@ -1,0 +1,4 @@
+#!/bin/bash
+export FLASK_APP=~/Documents/travel-the-web/travelTheWeb.py &&
+printf "export complete\n" &&
+flask run --host 0.0.0.0
