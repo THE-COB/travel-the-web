@@ -1,13 +1,29 @@
+<!DOCTYPE HTML>
 <html>
-
-<script src="coinElement.js"></script>
-
-<form action="/makeAccount" method="post">
-	Name: <input type="text" name="name"><br>
-	Email: <input type="email" name="email"><br>
-	Password: <input type="password" name="password"><br>
-	Favorite Type of Countertop: <input type="text" name="counter-top"><br>
-	<input type="submit">
-</form>
-
+  <head>
+    <title>Travel The Web-Create Account</title>
+  </head>
+  <body>
+  <h1>Travel The Web-Create Account</h1>
+  <form action="/makeAccount" method="post">
+    <table style="border-spacing:1em">
+  	  <tr>
+  	  <td>Name: </td><td><input type="text" name="name"></td>
+  	  </tr>
+  	  <tr>
+  	  <td>Email: </td><td><input type="email" name="email"></td>
+  	  </tr>
+  	  <tr>
+  	  <td>Password: </td><td><input type="password" name="password"></td>
+  	  </tr>
+  	  <tr>
+  	  <td>Favorite Type of Countertop: </td><td><input type="text" name="counter-top"></td>
+	    </tr>
+	    <tr>
+	    <td><input type="submit"></td>
+      </tr>
+    </table>
+  </form>
+  <h5>Or, <a href="login.html">log in with an existing account</a></h5>
+  </body>
 </html>
