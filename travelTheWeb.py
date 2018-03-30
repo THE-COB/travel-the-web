@@ -52,7 +52,8 @@ def putNewAccount(params):
 	fromaddr = "noreply.traveltheweb@gmail.com"
 	toaddr = email
 	confirmLink = "http://192.168.200.154:5000/confirm-account/"+entropy["conf0"]+key+entropy["conf1"]
-	msg = MIMEText("<p>Hello, "+name+"!<br><a href='"+confirmLink+"'>Click here</a> to confirm your Travel the Web account!",'html')
+	emailHtml = render_template("accountConfirmed.html", pars={"name": name, "confLink": confirmLink})
+	msg = MIMEText(emailHtml,'html')
 	msg["From"] = fromaddr
 	msg["to"] = toaddr
 	msg["Subject"] = "Link to confirm your new Travel the Web Account"
