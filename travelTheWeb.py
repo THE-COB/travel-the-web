@@ -1,8 +1,8 @@
-from flask import Flask
+from flask import Flask, render_template
 from flask import request
 from pymongo import MongoClient
 from datetime import datetime
-from hashlib import sha256
+from hashlib import sha256, md5
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from coin import Coin
@@ -13,6 +13,16 @@ app = Flask(__name__)
 
 client = MongoClient()
 db = client.TravelWeb
+
+def md5Encode(aStr):
+	return md5(aStr.encode()).hexdigest()
+
+entropy = \
+{
+	"conf0": md5Encode("confim ur links"), "conf1": md5Encode("confirm with the new MD5!"),\
+	"cc0": md5Encode("Securly create coins!"), "cc1": md5Encode("or ur bad"),
+	"dc0": md5Encode("better delete safely!"), "dc1": md5Encode("all the cool kids do")
+}
 
 def putNewAccount(params):
 	name = params["name"]
@@ -41,7 +51,7 @@ def putNewAccount(params):
 	)
 	fromaddr = "noreply.traveltheweb@gmail.com"
 	toaddr = email
-	confirmLink = "http://localhost:5000/confirm-account/"+key+"j3uy8ed09m4"
+	confirmLink = "http://192.168.200.154:5000/confirm-account/"+entropy["conf0"]+key+entropy["conf1"]
 	msg = MIMEText("<p>Hello, "+name+"!<br><a href='"+confirmLink+"'>Click here</a> to confirm your Travel the Web account!",'html')
 	msg["From"] = fromaddr
 	msg["to"] = toaddr
@@ -79,8 +89,9 @@ def homePage():
 	password = request.form["password"]
 	if(sha256(password.encode()).hexdigest() != user["Password"]):
 		return "Your password is incorrect"
-	createHtml = "<input type='button' onclick='location.href=\"/"+user["Name"]+"/kurghy6592"+user["key"]+"hfu334j59g3o0/create-coin\";' value='Create Coin' />"
-	return createHtml
+
+	htmlPrams = {"user": user, "entropy": entropy}
+	return render_template("homePage.html", params=htmlPrams)
 
 @app.route("/create-account")
 def createAccount():
@@ -96,16 +107,27 @@ def makeAccount():
 		return str(exc)
 	return "Account created, confirm your account by clicking the link we sent to your email<br>If you don't click the link in 5 days, your account will be deleted"
 
-@app.route("/confirm-account/j4s0kl1lk8q<key>j3uy8ed09m4")
+@app.route("/confirm-account/"+entropy["conf0"]+"<key>"+entropy["conf1"])
 def confirmAccount(key):
 	result = db.Clients.update_one({"key": key}, {"$set": {"Approved": 1}})
 	return "Your account has been approved"
 
-@app.route("/<username>/kurghy6592<key>hfu334j59g3o0/create-coin")
+@app.route("/create-coin/<username>/"+entropy["cc0"]+"<key>"+entropy["cc1"], methods=["POST"])
 def createCoin(username, key):
 	user = db.Clients.find_one({"Name": username})
 	if(user["key"] != key):
 		return "Something is wrong with the url"
-	newCoin = Coin(user["key"])
+	try:
+		newCoin = Coin(user["key"], request.form["coinName"])
+	except Exception as exc:
+		return str(exc)
 	newCoin.updateDb()
 	return "Coin was successfully created"
+
+@app.route("/delete-coin/<username>/"+entropy["dc0"]+"<key>/<coinId>"+entropy["dc1"])
+def deleteCoin(username, key, coinId):
+	try:
+		Coin.takeOut(key, coinId)
+	except Exception as exc:
+		return str(exc)
+	return "Coin successfully deleted"

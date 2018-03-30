@@ -1,0 +1,22 @@
+<!doctype html>
+<body>
+
+<h1>Hello, {{ params.user["Name"] }}!</h1>
+
+<form action='{{ "/create-coin/"+params.user["Name"]+"/"+params.entropy["cc0"]+params.user["key"]+params.entropy["cc1"] }}' method="post">
+	CoinName: <input type="text" name="coinName" />
+	<input type='submit' value='Create Coin' />
+</form>
+
+<br><br>
+<h3>Coins</h3>
+{% for coin in params.user["Coins"] %}
+	<br>
+	<p>Name: {{ coin["Name"] }}</p>
+	<p>Clicks: {{ coin["Clicks"] }}</p>
+	<input type='button' onclick="{{ 'location.href=\"/delete-coin/'+params.user['Name']+'/'+params.entropy['dc0']+params.user['key']+'/'+coin['CoinId']+params.entropy['dc1']+'\"' }}" value='Delete this Coin' />
+	<br>
+{% endfor %}
+
+</body>
+</html>
